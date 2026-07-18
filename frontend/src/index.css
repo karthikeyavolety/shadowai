@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-base: #080b14;
+  --color-surface: #0f1524;
+  --color-surface-2: #141b2d;
+  --color-border-glass: rgba(148, 163, 219, 0.14);
+
+  --color-signal-blue: #3b82f6;
+  --color-signal-purple: #8b5cf6;
+  --color-signal-cyan: #22d3ee;
+
+  --color-risk-critical: #f43f5e;
+  --color-risk-high: #f97316;
+  --color-risk-medium: #eab308;
+  --color-risk-low: #22c55e;
+
+  --color-text-primary: #e6e9f5;
+  --color-text-muted: #8b93b0;
+}
+
+html, body {
+  background: var(--color-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.signal-gradient-text {
+  background: linear-gradient(90deg, var(--color-signal-blue), var(--color-signal-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 219, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 219, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+::selection {
+  background: var(--color-signal-purple);
+  color: white;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-2) transparent;
+}

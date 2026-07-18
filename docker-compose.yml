@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV=demo
+      - SECRET_KEY=local-dev-secret-change-me
+      - CORS_ORIGINS=["http://localhost:5173","http://localhost:3000"]
+    # ENV=demo runs on the built-in in-memory database — no Mongo container
+    # required to get started. Point MONGO_URI at Atlas (or a mongo service
+    # you add here) when you're ready to persist real data.
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
