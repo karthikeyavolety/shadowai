@@ -1,15 +1,19 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: '/api/v1',
-  headers: { 'Content-Type': 'application/json' },
+  baseURL: `${import.meta.env.VITE_API_URL}/api/v1`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 })
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('shadowai_access_token')
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
   return config
 })
 
@@ -20,34 +24,50 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
-    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/login')) {
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/auth/login')
+    ) {
       if (isRefreshing) {
         return new Promise((resolve) => {
           pendingQueue.push(() => resolve(api(originalRequest)))
         })
       }
+
       originalRequest._retry = true
       isRefreshing = true
+
       try {
         const refreshToken = localStorage.getItem('shadowai_refresh_token')
-        if (!refreshToken) throw new Error('No refresh token')
-        // Refresh endpoint intentionally simple for now — rotates the
-        // access token using the stored refresh token.
-        const res = await axios.post('/api/v1/auth/refresh', { refresh_token: refreshToken })
+
+        if (!refreshToken) {
+          throw new Error('No refresh token')
+        }
+
+        const res = await api.post('/auth/refresh', {
+          refresh_token: refreshToken,
+        })
+
         const newAccess = res.data.data.access_token
+
         localStorage.setItem('shadowai_access_token', newAccess)
+
         pendingQueue.forEach((cb) => cb())
         pendingQueue = []
+
         return api(originalRequest)
-      } catch {
+      } catch (err) {
         localStorage.removeItem('shadowai_access_token')
         localStorage.removeItem('shadowai_refresh_token')
         window.location.href = '/login'
-        return Promise.reject(error)
+        return Promise.reject(err)
       } finally {
         isRefreshing = false
       }
     }
+
     return Promise.reject(error)
   }
 )
